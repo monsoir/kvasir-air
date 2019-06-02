@@ -1,0 +1,40 @@
+.layout {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.container {
+  padding: 30px;
+}
+
+.rounded {
+  --length: 300px;
+
+  width: var(--length);
+  height: var(--length);
+  border-radius: calc(var(--length) / 2);
+  background: white;
+
+  font-size: 3rem;
+  color: black;
+  text-align: center;
+
+  opacity: 0.4;
+
+  /* 禁用文本选中 */
+  user-select: none;
+}
+
+.rounded:hover {
+  /* x偏移量 | y偏移量 | 阴影模糊半径 | 阴影扩散半径 | 阴影颜色 */
+  box-shadow: -1px 1px 5px 10px gray;
+}
+
+.rounded:active {
+  opacity: 0.1;
+}
+
+.rounded > span {
+  cursor: pointer;
+}
