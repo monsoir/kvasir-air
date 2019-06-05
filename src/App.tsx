@@ -3,6 +3,9 @@ import './App.css';
 
 import RoundedButton from './components/RoundedButton';
 
+const host = process.env.NODE_ENV === 'production' ? '/' : 'http://localhost:8080/';
+let selectedFile: File;
+
 const App: React.FC = () => {
   return (
     <div className="App">
@@ -26,7 +29,7 @@ const App: React.FC = () => {
 const exportData = async () => {
   let blob = null;
   try {
-    const response = await fetch('/test', {
+    const response = await fetch(`${host}export`, {
       method: 'get',
     });
     // console.log(response);
@@ -43,7 +46,7 @@ const exportData = async () => {
   const url = window.URL.createObjectURL(new Blob([blob as Blob]));
   const linkEle = document.createElement('a');
   linkEle.href = url;
-  linkEle.setAttribute('download', 'backup.json');
+  linkEle.setAttribute('download', 'backup.zip');
 
   // 模拟 a 标签被点击
   document.body.appendChild(linkEle);
@@ -51,6 +54,48 @@ const exportData = async () => {
   linkEle.parentNode!.removeChild(linkEle);
 }
 
-const importData = () => {}
+const importData = () => {
+  const fileSelector = createFileSelector();
+  fileSelector.click();
+}
+
+const doImport = async () => {
+  let response = null;
+  try {
+    response = await fetch(`${host}import`, {
+      method: 'post',
+      body: selectedFile,
+      mode: 'cors',
+      headers: {
+        'Content-Type': 'application/octet-stream',
+      },
+    });
+    response = await response.json()
+  } catch {
+    alert('出错了，请确保在设备上开启了服务');
+    return;
+  }
+
+  console.log(response);
+}
+
+const createFileSelector = () => {
+  const fileSelector = document.createElement('input');
+  fileSelector.setAttribute('type', 'file');
+  fileSelector.setAttribute('accept', '.zip');
+  fileSelector.onchange = fileDidSelect;
+  return fileSelector;
+}
+
+const fileDidSelect = (e: Event) => {
+  if (e.target) {
+    const target = e.target as HTMLInputElement
+    if (target.files && target.files[0]) {
+      selectedFile = target.files[0];
+      console.log(target.files);
+      doImport();
+    }
+  }
+}
 
 export default App;
