@@ -32,7 +32,6 @@ const exportData = async () => {
     const response = await fetch(`${host}export`, {
       method: 'get',
     });
-    // console.log(response);
     blob = await response.blob();
   } catch {
     alert('出错了，请确保在设备上开启了服务');
@@ -70,7 +69,13 @@ const doImport = async () => {
         'Content-Type': 'application/octet-stream',
       },
     });
-    response = await response.json()
+    const isSomethingWrong = (response.status === 500);
+    response = await response.json();
+
+    if (isSomethingWrong) {
+      alert(response.message || '出错了');
+      return;
+    }
   } catch {
     alert('出错了，请确保在设备上开启了服务');
     return;
